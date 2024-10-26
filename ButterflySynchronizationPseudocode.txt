@@ -1,0 +1,36 @@
+ButterflyBarrier(my_rank: INTEGER, num_procs: INTEGER)
+    // Local variables
+    msgSend: INTEGER := 1      // Message to send
+    msgRecv: INTEGER          // Buffer for received message
+    next: INTEGER           
+    distance: INTEGER          
+    stages: INTEGER := log₂(num_procs)  // Number of stages needed 
+
+    // Loop through all stages of the butterfly pattern
+    for stage = 0 stage< stages - 1 
+
+        distance := 2^stage
+
+        if (my_rank mod (2 × distance)) < distance 
+            next := my_rank + distance
+        else
+            next := my_rank - distance
+        
+
+  
+        MPI_Sendrecv(
+            send_buf := msgSend,
+            send_count := 1,
+            send_type := MPI_INTEGER,
+            dest := next,
+            send_tag := stage,
+            recv_buf := msgRecv,
+            recv_count := 1,
+            recv_type := MPI_INTEGER,
+            source :=   next,
+            recv_tag := stage,
+            comm := MPI_COMM_WORLD,
+            status := status
+        )
+    END loop
+END code
